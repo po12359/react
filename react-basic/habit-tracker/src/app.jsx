@@ -1,9 +1,9 @@
 import "./app.css";
-import Habit from "./components/habit";
+import Habits from "./components/habits";
 
 function App() {
   return (
-    <Habit></Habit>
+    <Habits></Habits>
     // 자식 요소가 있을 시
     //   <habit />
     // 자식 요소가 없을 시
