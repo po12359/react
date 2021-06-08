@@ -1,27 +1,30 @@
-import React, { Component } from "react";
+import React, { memo } from "react";
 import Habit from "./habit";
-
-class Habits extends Component {
-  render() {
+import Input from "./input";
+const Habits = memo(
+  ({ habits, onIncrement, onDecrement, onDelete, onReset, onAdd }) => {
     return (
       <>
+        <div className="habits">
+          <Input onAdd={onAdd} />
+        </div>
         <ul>
-          {this.props.habits.map((habit) => (
+          {habits.map((habit) => (
             <Habit
               key={habit.id}
               habit={habit}
-              onIncrement={this.props.onIncrement}
-              onDecrement={this.props.onDecrement}
-              onDelete={this.props.onDelete}
+              onIncrement={onIncrement}
+              onDecrement={onDecrement}
+              onDelete={onDelete}
             />
           ))}
         </ul>
-        <button className="habits-reset " onClick={this.props.onReset}>
+        <button className="habits-reset " onClick={onReset}>
           Reset All
         </button>
       </>
     );
   }
-}
+);
 
 export default Habits;

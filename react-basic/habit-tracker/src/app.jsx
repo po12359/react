@@ -1,62 +1,72 @@
 import "./app.css";
 import Habits from "./components/habits";
-import Nav from "./components/nav.jsx";
-import { Component } from "react";
-import Input from "./components/input";
-class App extends Component {
-  state = {
-    habits: [],
-  };
-  handleIncrement = (habit) => {
-    const habits = [...this.state.habits];
-    const index = habits.indexOf(habit);
-    habits[index].count++;
+import Nav from "./components/nav";
+import React, { useCallback } from "react";
+import { useState } from "react";
 
-    this.setState({ habits });
-  };
-  handleDecrement = (habit) => {
-    const habits = [...this.state.habits];
-    const index = habits.indexOf(habit);
-    const count = habits[index].count - 1;
-    habits[index].count = count < 0 ? 0 : count;
+const App = (props) => {
+  const [habits, setHabits] = useState([]);
 
-    this.setState({ habits });
-  };
-  handleDelete = (habit) => {
-    const habits = this.state.habits.filter((state) => state.id !== habit.id);
+  const handleIncrement = useCallback(
+    (habit) =>
+      setHabits((habits) =>
+        habits.map((item) => {
+          {
+            if (item.id === habit.id) {
+              return { ...habit, count: habit.count + 1 };
+            } else {
+              return item;
+            }
+          }
+        })
+      ),
+    []
+  );
+  const handleDecrement = useCallback(
+    (habit) =>
+      setHabits((habits) =>
+        habits.map((item) => {
+          if (item.id === habit.id) {
+            const count = habit.count - 1;
+            return { ...habit, count: count < 0 ? 0 : count };
+          } else {
+            return item;
+          }
+        })
+      ),
+    []
+  );
 
-    this.setState({ habits });
-  };
-  handleReset = () => {
-    //   const habits = this.state.habits.filter((state) => (state.length = 0)); 배열 초기화
-    const habits = this.state.habits.map((habit) => {
-      return { ...habit, count: 0 };
-    });
-    this.setState({ habits });
-  };
-  handleAdd = (name) => {
-    const habits = [...this.state.habits, { id: Date.now(), name, count: 0 }];
-    this.setState({ habits });
-  };
-  render() {
-    return (
-      <>
-        <Nav
-          totalCount={this.state.habits.filter((item) => item.count > 0).length}
-        />
-        <div className="habits">
-          <Input onAdd={this.handleAdd} />
-        </div>
-        <Habits
-          habits={this.state.habits}
-          onIncrement={this.handleIncrement} // (e)=> this.handleIncrement(e) : 똑같은 arg는 생략 가능하다.
-          onDecrement={this.handleDecrement}
-          onDelete={this.handleDelete}
-          onReset={this.handleReset}
-        ></Habits>
-      </>
+  const handleDelete = useCallback((habit) => {
+    setHabits((habits) => habits.filter((item) => item.id !== habit.id));
+  }, []);
+
+  const handleReset = useCallback(() => {
+    setHabits((habits) =>
+      habits.map((item) => {
+        if (item.count === 0) {
+          return item;
+        } else {
+          return { ...item, count: 0 };
+        }
+      })
     );
-  }
-}
-
+  });
+  const handleAdd = useCallback((name) => {
+    setHabits((habits) => [...habits, { id: Date.now(), name, count: 0 }]);
+  });
+  return (
+    <>
+      <Nav totalCount={habits.filter((item) => item.count > 0).length} />
+      <Habits
+        habits={habits}
+        onIncrement={handleIncrement}
+        onDecrement={handleDecrement}
+        onDelete={handleDelete}
+        onAdd={handleAdd}
+        onReset={handleReset}
+      />
+    </>
+  );
+};
 export default App;
